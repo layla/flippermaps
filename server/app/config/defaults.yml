@@ -1,7 +1,0 @@
-contenttype:
-    default_status: published
-    sort: id
-
-field:
-    attributes:
-        class: form-control
