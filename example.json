@@ -1,0 +1,28 @@
+{
+	"name": "Cineplex",
+	"address": "SomeStreet 2",
+	"zipcode": "12345",
+	"city": "Berlin",
+	"country": "Germany",
+	"machines": [
+		{
+			"model": {
+				"name": "Wheel of Fortune",
+			},
+			"notes": "No tilt",
+			"rates": [
+				{ "price": 200, "credits": 3 },
+				{ "price": 100, "credits": 1 }
+			]
+		},
+		{
+			"name": "Lord of the Rings",
+			"notes": "Tilts quickly",
+			"rates": [
+				{ "price": 200, "credits": 5 },
+				{ "price": 100, "credits": 2 },
+				{ "price": 50, "credits": 1 }
+			]
+		}
+	]
+}
