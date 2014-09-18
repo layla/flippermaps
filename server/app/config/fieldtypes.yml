@@ -1,0 +1,261 @@
+auto-integer:
+    sequelize:
+        type: INTEGER
+        primaryKey: true
+        autoIncrement: true
+    doctrine:
+        type: integer
+        default: 0
+        notnull: false
+        generator:
+            strategy: AUTO
+
+auto-guid:
+    sequelize:
+        type: UUID
+        defaultValue: UUIDV4
+        primaryKey: true
+    doctrine:
+        type: guid
+        generator:
+            strategy: UUID
+
+integer:
+    sequelize:
+        type: INTEGER
+    doctrine:
+        type: integer
+        default: 0
+        notnull: false
+
+sequence:
+    sequelize:
+        type: INTEGER
+        autoIncrement: true
+    doctrine:
+        type: integer
+        autoincrement: true
+        generator:
+            strategy: SEQUENCE
+
+guid:
+    sequelize:
+        type: UUID
+    doctrine:
+        type: guid
+
+string:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+text:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+title:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+image:
+    purpose: image
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+uploadcare:
+    purpose: image
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+slug:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+html:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+video:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+templateselect:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+geolocation:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+imagelist:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+file:
+    sequelize:
+        type: STRING
+    doctrine:
+        type: string
+        default: ''
+        notnull: false
+        length: 256
+
+filelist:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+checkbox:
+    sequelize:
+        type: BOOLEAN
+    doctrine:
+        type: boolean
+        default: 0
+        notnull: false
+
+markdown:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+datetime:
+    sequelize:
+        type: DATE
+    doctrine:
+        type: datetime
+        notnull: false
+
+date:
+    sequelize:
+        type: DATE
+    doctrine:
+        type: date
+        notnull: false
+
+integer:
+    sequelize:
+        type: INTEGER
+    doctrine:
+        type: integer
+        default: 0
+        notnull: false
+
+float:
+    sequelize:
+        type: FLOAT
+    doctrine:
+        type: float
+        default: 0
+        notnull: false
+
+select:
+    eloquent:
+        setter: to_json_if_array
+        getter: from_json_if_json
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false
+        length: 256
+
+point:
+    eloquent:
+        setter: geojson_to_postgis
+        selector: postgis_as_geojson
+    sequelize:
+        type: STRING
+    doctrine:
+        type: point
+        notnull: false
+
+linestring:
+    eloquent:
+        setter: geojson_to_postgis
+        selector: postgis_as_geojson
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: linestring
+        notnull: false
+
+rectangle:
+    eloquent:
+        setter: geojson_to_postgis
+        selector: postgis_as_geojson
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: rectangle
+        notnull: false
+
+textarea:
+    sequelize:
+        type: TEXT
+    doctrine:
+        type: text
+        default: ''
+        notnull: false

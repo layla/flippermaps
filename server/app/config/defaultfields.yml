@@ -1,0 +1,36 @@
+id:
+  type: auto-guid
+  purpose: id
+  options:
+    hidden: true
+# slug:
+#   type: string
+#   purpose: slug
+datecreated:
+  type: datetime
+  purpose: datecreated
+  options:
+    hidden: true
+datechanged:
+  type: datetime
+  purpose: datechanged
+  options:
+    hidden: true
+weight:
+    type: sequence
+    purpose: weight
+# datepublish:
+#   type: datetime
+#   purpose: datepublish
+# datedepublish:
+#   type: datetime
+#   purpose: datedepublish
+# username:
+#   type: string
+#   purpose: username
+# ownerid:
+#   type: integer
+#   purpose: ownerid
+# status:
+#   type: string
+#   purpose: status

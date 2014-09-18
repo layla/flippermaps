@@ -1,0 +1,72 @@
+database:
+  driver: postgres
+  databasename: trapps
+  username: trapps
+  password: trapps
+  # prefix: ""
+
+elasticsearch:
+  hosts:
+    - 127.0.0.1:9200
+
+uploadcare:
+  publickey: ccc0b7396e7fd4654e6e
+  privatekey: d6796c8d4eb1d4880a1b
+
+locale: nl_NL
+timezone: UTC
+
+locales:
+  nl: Dutch
+  en: English
+  de: German
+  fr: French
+
+package:
+  vendor: Trapps
+  name: Domain
+
+classes:
+  fieldtypecollection: Bolt\Core\Config\Object\Collection\FieldTypeCollection
+  fieldtype: Bolt\Core\Config\Object\FieldType
+  field: Bolt\Core\Config\Object\Field
+  contentcollection: Bolt\Core\Config\Object\Collection\ContentCollection
+  content: Bolt\Core\Config\Object\Content
+
+providers:
+  - Whoops\Provider\Silex\WhoopsServiceProvider
+  - Silex\Provider\TwigServiceProvider
+  - Silex\Provider\SessionServiceProvider
+  - Silex\Provider\UrlGeneratorServiceProvider
+  - Silex\Provider\TranslationServiceProvider
+  - Silex\Provider\ServiceControllerServiceProvider
+  - Bolt\Core\Provider\Silex\TranslationServiceProvider
+  - Bolt\Core\Provider\Silex\NotifyServiceProvider
+  - Bolt\Core\Provider\Silex\IlluminateServiceProvider
+  - Bolt\Core\Provider\Silex\TwigPathServiceProvider
+  - Bolt\Core\Provider\Silex\DatabaseServiceProvider
+  - Bolt\Core\Provider\Silex\CompilerServiceProvider
+  - Bolt\Core\Provider\Silex\ViewServiceProvider
+  - Bolt\Core\Provider\Silex\EloquentServiceProvider
+  - Bolt\Core\Provider\Silex\MigratorServiceProvider
+  - Bolt\Core\Provider\Silex\StorageServiceProvider
+  - Bolt\Core\Provider\Silex\ProjectServiceProvider
+  - Bolt\Core\Provider\Silex\ControllerServiceProvider
+  - Bolt\Provider\Silex\AuthProvider
+  - Trapps\Extension\Elasticsearch\Provider\Silex\ElasticsearchServiceProvider
+
+branding:
+  name: Trapps
+  path: admin
+
+project:
+  contenttype: apps
+
+user:
+  contenttype: users
+
+redactor:
+  images:
+    thumb: image_list_highres
+    image: image_lowres
+    title: title_nl
