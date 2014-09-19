@@ -16,7 +16,9 @@
 			]
 		},
 		{
-			"name": "Lord of the Rings",
+			"model": {
+				"name": "Lord of the Rings",
+			},
 			"notes": "Tilts quickly",
 			"rates": [
 				{ "price": 200, "credits": 5 },
