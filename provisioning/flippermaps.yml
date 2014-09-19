@@ -24,6 +24,15 @@
       #   - { name: 'lukas-vlcek/bigdesk' }
 
   tasks:
+  - name: make sure flippermaps user exists
+    user:
+      name: flippermaps
+      comment: "flippermaps"
+      state: present
+      home: "/home/flippermaps"
+      createhome: yes
+      shell: /bin/bash
+
   - name: Update apt cache
     apt: update_cache=yes
 
@@ -63,15 +72,6 @@
 
   - name: Set composer permissions
     file: path=/usr/local/bin/composer owner=flippermaps group=flippermaps mode=0755
-
-  - name: make sure flippermaps user exists
-    user:
-      name: flippermaps
-      comment: "flippermaps"
-      state: present
-      home: "/home/flippermaps"
-      createhome: yes
-      shell: /bin/bash
 
   - file:
       path: /home/flippermaps/.ssh
