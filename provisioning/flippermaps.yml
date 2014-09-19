@@ -1,0 +1,201 @@
+---
+- hosts:
+    - flippermaps
+
+  roles:
+    - role: ansible-elasticsearch
+      elasticsearch_version: 1.2.2
+      elasticsearch_heap_size: 512m
+      elasticsearch_max_open_files: 32768
+      elasticsearch_timezone: "Europe/Berlin"
+      elasticsearch_node_max_local_storage_nodes: 1
+      elasticsearch_index_mapper_dynamic: "true"
+      elasticsearch_cluster_name: flippermaps
+      elasticsearch_node_name: elasticsearch-flippermaps-node
+      elasticsearch_memory_bootstrap_mlockall: "true"
+      elasticsearch_install_java: "true"
+      elasticsearch_network_http_max_initial_line_length: 20kb
+      elasticsearch_network_host: localhost
+      # elasticsearch_plugins:
+      #   - { name: 'elasticsearch/elasticsearch-transport-thrift/2.2.0' }
+      #   - { name: 'com.github.richardwilly98.elasticsearch/elasticsearch-river-mongodb/2.0.0' }
+      #   - { name: 'mobz/elasticsearch-head' }
+      #   - { name: 'karmi/elasticsearch-paramedic' }
+      #   - { name: 'lukas-vlcek/bigdesk' }
+
+  tasks:
+  - name: Update apt cache
+    apt: update_cache=yes
+
+  - name: Generate locales
+    command: "locale-gen {{item}}"
+    with_items:
+    - en_US.UTF-8
+    - en_US
+
+  - name: Install nginx
+    apt: name=nginx state=present
+
+  - name: Copy nginx configuration
+    copy:
+      src: nginx.conf
+      dest: /etc/nginx/nginx.conf
+    notify: restart nginx
+
+  - apt: name={{item}} state=present
+    with_items:
+      - php5-common
+      - php5-curl
+      - php5-mcrypt
+      - php5-fpm
+      - php5-cli
+      - php5-mysql
+      - php5-gd
+      - php5-pgsql
+      - language-pack-en
+
+  - name: make sure flippermaps user exists
+    user:
+      name: flippermaps
+      comment: "flippermaps"
+      state: present
+      home: "/home/flippermaps"
+      createhome: yes
+      shell: /bin/bash
+
+  - file:
+      path: /home/flippermaps/.ssh
+      state: directory
+      owner: flippermaps
+      group: flippermaps
+      mode: 0700
+
+  - copy:
+      src: flippermaps-authorized_keys
+      dest: /home/flippermaps/.ssh/authorized_keys
+      owner: flippermaps
+      group: flippermaps
+      mode: 0600
+
+  - name: Copy nginx flippermaps configuration
+    copy:
+      src: flippermaps-nginx.conf
+      dest: /etc/nginx/sites-available/flippermaps
+    notify: restart nginx
+
+  - name: Create flippermaps link
+    file:
+      path: /etc/nginx/sites-enabled/flippermaps
+      src: /etc/nginx/sites-available/flippermaps
+      state: link
+    notify: restart nginx
+
+  - copy:
+      src: flippermaps-php5-fpm-www-pool.conf
+      dest: /etc/php5/fpm/pool.d/www.conf
+      owner: root
+      group: root
+      mode: 0644
+    notify: restart php5-fpm
+
+  - name: Install memcached
+    apt: name=memcached state=present
+
+  - apt: name={{item}} state=present
+    with_items:
+      - python-psycopg2
+      - postgresql-9.3
+      - postgresql-9.3-postgis-2.1
+      - postgresql-contrib-9.3
+
+  - copy:
+      src: pg_hba.conf
+      dest: /etc/postgresql/9.3/main/pg_hba.conf
+      owner: postgres
+      group: postgres
+      mode: 0640
+    notify: restart postgresql
+
+  - copy:
+      src: postgresql.conf
+      dest: /etc/postgresql/9.3/main/postgresql.conf
+      owner: postgres
+      group: postgres
+      mode: 0644
+    notify: restart postgresql
+
+  - name: create flippermaps pg db
+    postgresql_db:
+      name: flippermaps
+      encoding: 'UTF-8'
+      lc_collate: 'en_US.UTF-8'
+      lc_ctype: 'en_US.UTF-8'
+      template: 'template0'
+    sudo: yes
+    sudo_user: postgres
+
+  - name: add flippermaps pg user
+    postgresql_user:
+      db: flippermaps
+      name: flippermaps
+      password: flippermaps
+      priv: ALL
+      role_attr_flags: SUPERUSER
+    sudo: yes
+    sudo_user: postgres
+
+  - copy:
+      src: pgpass
+      dest: /home/vagrant/.pgpass
+      owner: vagrant
+      group: vagrant
+      mode: 0600
+
+  - name: Check extensions in PostgreSQL database
+    command: /usr/bin/psql -P format=unaligned -qtc "SELECT installed_version FROM pg_available_extensions WHERE name='postgis' OR name='postgis_topology';"
+    sudo: true
+    sudo_user: postgres
+    register: check
+
+  - name: Install extensions in PostgreSQL
+    command: /usr/bin/psql -qc "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology"
+    sudo: true
+    sudo_user: postgres
+
+  - name: Check for database template
+    command: /usr/bin/psql -tl -P format=unaligned
+    sudo: true
+    sudo_user: postgres
+    register: dbcheck
+
+  - name: Create database template
+    command: /usr/bin/createdb template_postgis
+    sudo: true
+    sudo_user: postgres
+    when: '"template_postgis" not in dbcheck.stdout'
+    register: createdb
+
+  - command: update-rc.d elasticsearch defaults 95 10
+
+  - name: Copy nginx search configuration
+    copy:
+      src: search-nginx.conf
+      dest: /etc/nginx/sites-available/search.conf
+    notify: restart nginx
+
+  - name: Create search link
+    file:
+      path: /etc/nginx/sites-enabled/search.conf
+      src: /etc/nginx/sites-available/search.conf
+      state: link
+    notify: restart nginx
+
+  handlers:
+  - name: restart nginx
+    service: name=nginx state=restarted
+  - name: restart php5-fpm
+    service: name=php5-fpm state=restarted
+  - name: restart postgresql
+    service: name=postgresql state=restarted
+  - name: restart postgresql
+    service: name=postgresql state=restarted

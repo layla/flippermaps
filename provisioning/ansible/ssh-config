@@ -1,0 +1,6 @@
+Host flippermaps
+  Hostname _
+  Port 22
+  User root
+  IdentityFile /vagrant/id_flippermaps
+  StrictHostKeyChecking no

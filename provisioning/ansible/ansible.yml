@@ -1,0 +1,24 @@
+---
+- hosts: all
+
+  tasks:
+    - name: Install python-software-properties
+      apt: pkg=python-software-properties state=present #update_cache=yes
+    - apt_repository: repo='ppa:rquillo/ansible'
+
+    - apt: name={{item}} state=present
+      with_items:
+        - ansible
+        - git-core
+
+    - copy:
+        src: ansible-hosts
+        dest: /etc/ansible/hosts
+
+    - copy:
+        src: ssh-config
+        dest: /home/vagrant/.ssh/config
+
+    - copy:
+        src: ansible.cfg
+        dest: /etc/ansible/ansible.cfg

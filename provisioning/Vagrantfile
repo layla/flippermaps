@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "flippermaps-cfg"
+
+  config.vm.provision :ansible do |ansible|
+    ansible.sudo = true
+    ansible.playbook = "ansible/ansible.yml"
+    ansible.limit = 'all'
+    ansible.verbose = 'vv'
+  end
+
+  config.vm.synced_folder ".", "/vagrant"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--memory", "512"]
+  end
+end
