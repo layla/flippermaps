@@ -1,10 +1,9 @@
 var _ = require('underscore')
-  , Config = require('./config')
   , DB = require('./db')
   , configLoader = require('./configLoader')
-  , ContentTypeCollection = require('trapps-hybrid/src/trapps/collection/contenttypecollection')
-  , Collection = require('trapps-hybrid/src/trapps/collection/collection')
-  , FieldCollection = require('trapps-hybrid/src/trapps/collection/fieldcollection');
+  , Collection = require('./config/collection/collection')
+  , ContentTypeCollection = require('./config/collection/contentTypeCollection')
+  , FieldCollection = require('./config/collection/fieldCollection');
 
 function App(attributes) {
   _.extend(this, attributes);
@@ -14,16 +13,16 @@ function App(attributes) {
 
 _.extend(App.prototype, {
   setupConfig: function() {
-    var data = configLoader.load(this.configFiles);
-    this.config = new Config(data);
-    this.contentTypes = new ContentTypeCollection(this.config.get('contenttypes'));
-    this.fieldTypes = new Collection(this.config.get('fieldtypes'));
-    this.defaultFields = new FieldCollection(this.config.get('defaultfields'));
+    var config = configLoader.load(this.configFiles);
+    this.config = config;
+    this.contentTypes = new ContentTypeCollection(this.config.contenttypes);
+    this.fieldTypes = new Collection(this.config.fieldtypes);
+    this.defaultFields = new FieldCollection(this.config.defaultfields);
   },
 
   setupDatabase: function() {
-    var config = this.config.get('app').database;
-    var locales = _.keys(this.config.get('app').locales);
+    var config = this.config.app.database;
+    var locales = _.keys(this.config.app.locales);
     this.db = new DB(config, locales, this.contentTypes, this.fieldTypes, this.defaultFields);
   }
 });

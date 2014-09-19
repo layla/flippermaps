@@ -66,7 +66,7 @@ _.extend(DB.prototype, {
 
     this.contentTypes.each(function(contentType) {
       schema = that.getSequelizeSchemaForContentType(contentType);
-
+      console.log(schema, contentType);
       that.models[contentType.key] = that.connection.define(contentType.key, schema, {
         tableName: contentType.key,
         timestamps: false,

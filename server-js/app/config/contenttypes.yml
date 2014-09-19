@@ -32,7 +32,7 @@ location:
         number:
             type: text
     relations:
-        machines:
+        machine:
             other: machine
 
 machine:

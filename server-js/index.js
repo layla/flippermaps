@@ -47,7 +47,7 @@ server.use(sessions({
     // cookie name dictates the key name added to the request object
     cookieName: 'session',
     // should be a large unguessable string
-    secret: 'yoursecret',
+    secret: 'ewfijweuih234hr@#Feuifhiuqefvj',
     // how long the session will stay valid in ms
     duration: 365 * 24 * 60 * 60 * 1000
 }));
@@ -98,6 +98,6 @@ server.get(/.*/, restify.serveStatic({
   'directory': './dist'
 }));
 
-server.listen(8080, function () {
+server.listen(5000, function () {
   console.log('%s listening at %s', server.name, server.url);
 });

@@ -1,8 +1,8 @@
 database:
   driver: postgres
-  databasename: flippermap
-  username: flippermap
-  password: flippermap
+  databasename: flippermaps
+  username: flippermaps
+  password: flippermaps
   # prefix: ""
 
 elasticsearch:

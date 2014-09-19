@@ -18,6 +18,12 @@
 		{
 			"model": {
 				"name": "Lord of the Rings",
+				"notes": [
+					{
+						"type": "trick",
+						"node": "LRLLRLLRRL for free game"
+					}
+				]
 			},
 			"notes": "Tilts quickly",
 			"rates": [
