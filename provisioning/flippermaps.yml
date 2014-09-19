@@ -24,6 +24,8 @@
       #   - { name: 'lukas-vlcek/bigdesk' }
 
   tasks:
+  - hostname: name=flippermaps.dev
+
   - name: Update apt cache
     apt: update_cache=yes
 
