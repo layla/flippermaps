@@ -36,7 +36,7 @@ passport.deserializeUser(function(userId, done) {
 });
 
 var server = restify.createServer({
-  name: 'trapps-cms',
+  name: 'flippermaps',
   version: '1.0.0'
 });
 server.use(redirect())
@@ -79,7 +79,7 @@ function ensureAuthenticated(req, res, next) {
 }
 
 server.get('/', ensureAuthenticated, function(req, res, next) {
-  var body = fs.readFileSync('./node_modules/trapps-hybrid/dist/cms/index.html', 'utf8');;
+  var body = fs.readFileSync('index.html', 'utf8');;
   res.writeHead(200, {
     'Content-Length': Buffer.byteLength(body),
     'Content-Type': 'text/html'
@@ -95,7 +95,7 @@ server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/route
 server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'));
 
 server.get(/.*/, restify.serveStatic({
-  'directory': './node_modules/trapps-hybrid/dist/cms'
+  'directory': './dist'
 }));
 
 server.listen(8080, function () {
