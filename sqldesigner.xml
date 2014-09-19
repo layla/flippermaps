@@ -111,7 +111,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="458" y="62" name="machines">
+	<table x="470" y="136" name="machines">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -126,23 +126,11 @@
 			<default>NULL</default>
 			<relation table="model" row="id" />
 		</row>
-		<row name="name" null="1" autoincrement="0">
-			<datatype>VARCHAR</datatype>
-			<default>NULL</default>
-		</row>
-		<row name="rating" null="1" autoincrement="0">
-			<datatype>DECIMAL</datatype>
-			<default>NULL</default>
-		</row>
-		<row name="votes" null="1" autoincrement="0">
-			<datatype>TINYINT</datatype>
-			<default>NULL</default>
-		</row>
 		<key type="PRIMARY" name="">
 			<part>id</part>
 		</key>
 	</table>
-	<table x="744" y="73" name="rates">
+	<table x="457" y="9" name="rates">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
