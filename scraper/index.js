@@ -6,6 +6,8 @@ var geocoder = require('node-geocoder').getGeocoder('google', 'https', {
   formatter: null         // 'gpx', 'string', ...
 });
 var util = require('util');
+var fs = require('fs');
+
 var allResults = [];
 
 for (var i = 0; i < Math.ceil(1248 / 10); i++) {
@@ -29,7 +31,7 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
 
             result.city = clean(tds[0]);
             result.zipcode = clean(tds[1]);
-            result.place = clean(tds[2]);
+            result.name = clean(tds[2]);
             result.machine = clean(tds[3]);
             result.address = clean(tds[4]);
             result.stars = $(tds[5]).find('img').length;
@@ -40,15 +42,26 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
           }).get();
       }, function(news) {
         news.forEach(function(item) {
-          geocoder.geocode(item.address
+          // console.log(item);
+          var address = item.address
               .replace('Str.', 'straße')
               .replace('str.', 'straße')
               .replace(/([0-9]+)/, "+$1")
-              .replace(/\(.*\)/g, '') +
+              .replace(/\(.*\)/g, '');
+
+          if (address == "-") {
+            address = item.name;
+          }
+
+          var guessString = address +
             ',' +
             item.zipcode +
             ',' +
-            item.city, function(err, res) {
+            item.city;
+
+          console.log(guessString);
+          geocoder.geocode(guessString, function(err, res) {
+              console.log(res, err);
               if ( ! err) {
                 var pl = res[0];
 
@@ -57,9 +70,14 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
                   coordinates: [pl.longitude, pl.latitude],
                 };
 
+                item.city = pl.city;
+                item.state = pl.state;
+                item.statecode = pl.stateCode;
+                item.zipcode = pl.zipcode;
                 item.country = pl.country;
                 item.street = pl.streetName;
                 item.number = pl.streetNumber;
+                item.countrycode = pl.countryCode;
 
                 allResults.push(item);
               }
@@ -71,4 +89,5 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
 
 setTimeout(function() {
   console.log(util.inspect(allResults, false, null));
+  fs.writeFile('scraped.json', JSON.stringify(allResults));
 }, 60 * 1000 * 2);

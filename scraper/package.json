@@ -1,5 +1,5 @@
 {
-  "name": "flippermap-client",
+  "name": "flippermap-scraper",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "jquery": "^2.1.1",
-    "leaflet": "^0.7.3",
-    "underscore": "^1.7.0"
+    "scraperjs": "^0.3.0",
+    "node-geocoder": "^2.9.0",
+    "request": "^2.44.0",
+    "sequelize": "^1.7.10",
+    "pg": "^3.4.3"
   }
 }
