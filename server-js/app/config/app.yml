@@ -1,0 +1,19 @@
+database:
+  driver: postgres
+  databasename: flippermap
+  username: flippermap
+  password: flippermap
+  # prefix: ""
+
+elasticsearch:
+  hosts:
+    - 127.0.0.1:9200
+
+locale: nl_NL
+timezone: UTC
+
+locales:
+  nl: Dutch
+  en: English
+  de: German
+  fr: French

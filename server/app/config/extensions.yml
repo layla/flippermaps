@@ -1,8 +1,0 @@
-spatial:
-    enabled: true
-    provider: Spatial\SpatialServiceProvider
-    options:
-        map:
-            default_center:
-                lat: 5
-                lon: 50

@@ -1,0 +1,44 @@
+location:
+    name: location
+    fields:
+        image:
+            type: uploadcare
+            label: image
+            crop:
+                w: 1024
+                h: 1024
+        city:
+            type: text
+        zipcode:
+            type: text
+        place:
+            type: text
+        machine:
+            type: text
+        address:
+            type: text
+        stars:
+            type: text
+        note:
+            type: text
+        lastupdate:
+            type: text
+        pin:
+            type: text
+        country:
+            type: text
+        street:
+            type: text
+        number:
+            type: text
+    relations:
+        machines:
+            other: machine
+
+machine:
+    name: machine
+    fields:
+        name:
+            type: text
+        games:
+            type: text
