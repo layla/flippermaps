@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.define 'flippermaps' do |machine|
     machine.vm.box = "ubuntu/trusty64"
-    machine.vm.hostname = "flippermaps"
+    machine.vm.hostname = "flippermaps.dev"
 
     machine.vm.network "private_network", ip: "192.168.33.125"
 
