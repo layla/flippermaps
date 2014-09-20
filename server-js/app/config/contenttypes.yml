@@ -1,44 +1,70 @@
-location:
-    name: location
+users:
+    name: users
     fields:
-        image:
-            type: uploadcare
-            label: image
-            crop:
-                w: 1024
-                h: 1024
-        city:
-            type: text
-        zipcode:
-            type: text
-        place:
-            type: text
-        machine:
-            type: text
-        address:
-            type: text
-        stars:
-            type: text
-        note:
-            type: text
-        lastupdate:
-            type: text
-        pin:
-            type: text
-        country:
-            type: text
-        street:
-            type: text
-        number:
-            type: text
-    relations:
-        machine:
-            other: machine
+        email:
+            type: string
+        password:
+            type: string
 
-machine:
-    name: machine
+locations:
+    name: locations
     fields:
         name:
             type: text
+        pin:
+            type: point
+        state_name:
+            type: text
+        state_code:
+            type: text
+        street:
+            type: text
+        zipcode:
+            type: text
+        housenumber:
+            type: text
+    relations:
+        users:
+            type: belongsTo
+        machines:
+            type: hasMany
+
+machines:
+    name: machines
+    fields:
+        name:
+            type: text
+        rating:
+            type: text
+        votes:
+            type: text
+
+notes:
+    name: notes
+    fields:
+        note:
+            type: string
+        type:
+            type: string
+
+rates:
+    name: rates
+    fields:
+        price:
+            type: float
         games:
+            type: float
+
+cities:
+    name: cities
+    fields:
+        name:
+            type: text
+
+countries:
+    name: countries
+    fields:
+        name:
+            type: text
+        code:
             type: text

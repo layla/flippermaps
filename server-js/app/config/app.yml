@@ -1,6 +1,6 @@
 database:
   driver: postgres
-  databasename: flippermaps
+  databasename: flippermapsjs
   username: flippermaps
   password: flippermaps
   # prefix: ""

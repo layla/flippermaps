@@ -22,7 +22,6 @@ passport.serializeUser(function(user, done) {
 
 passport.deserializeUser(function(userId, done) {
   app.db.models.users.findAll({
-    include: [app.db.models.apps],
     where: {
       id: userId
     }
@@ -77,16 +76,6 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); }
   res.redirect('/login');
 }
-
-server.get('/', ensureAuthenticated, function(req, res, next) {
-  var body = fs.readFileSync('index.html', 'utf8');;
-  res.writeHead(200, {
-    'Content-Length': Buffer.byteLength(body),
-    'Content-Type': 'text/html'
-  });
-  res.write(body);
-  res.end();
-});
 
 server.get('/api/:contentTypeKey', ensureAuthenticated, require('./src/routes/list'));
 server.post('/api/:contentTypeKey', require('./src/routes/create'));

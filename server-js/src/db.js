@@ -11,7 +11,7 @@ function DB(config, locales, contentTypes, fieldTypes, defaultFields) {
 
   this.connection = this.connect();
   this.setupSchema();
-  // this.sync();
+  this.sync();
 }
 
 _.extend(DB.prototype, {
@@ -45,11 +45,17 @@ _.extend(DB.prototype, {
 
   getSequelizeSchemaForContentType: function(contentType) {
     var config
+      , fieldTypeConfig
       , schema = {}
       , fieldTypes = this.fieldTypes;
 
     this.getDatabaseFieldsForContentType(contentType).each(function(field) {
-      config = _.clone(fieldTypes.get(field.type).sequelize);
+      fieldTypeConfig = fieldTypes.get(field.type);
+      if ( ! fieldTypeConfig) {
+        throw new Error("No config found for fieldtype: " + field.type);
+      }
+
+      config = _.clone(fieldTypeConfig.sequelize);
       config.type = Sequelize[config.type];
       if (config.defaultValue == "UUIDV4") {
         config.defaultValue = Sequelize.UUIDV4;
@@ -68,7 +74,6 @@ _.extend(DB.prototype, {
       schema = that.getSequelizeSchemaForContentType(contentType);
       console.log(schema, contentType);
       that.models[contentType.key] = that.connection.define(contentType.key, schema, {
-        tableName: contentType.key,
         timestamps: false,
         underscored: true,
         instanceMethods: {
@@ -108,7 +113,7 @@ _.extend(DB.prototype, {
       });
 
       contentType.getRelations().getOutgoing().each(function(relation) {
-        that.models[contentType.key].hasMany(that.models[relation.key], {
+        that.models[contentType.key][relation.type](that.models[relation.key], {
           through: relation.key + '_' + contentType.key,
           // onDelete: 'CASCADE',
           // hooks: true
