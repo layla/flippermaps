@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <!-- SQL XML created by WWW SQL Designer, http://code.google.com/p/wwwsqldesigner/ -->
-<!-- Active URL: http://ondras.zarovi.cz/sql/demo/ -->
+<!-- Active URL: http://localhost/sqldesigner/ -->
 <sql>
 	<datatypes db="mysql">
 		<group label="Numeric" color="rgb(238,238,170)">
@@ -38,7 +38,7 @@
 			<type label="Bit" length="0" sql="bit" quote=""/>
 		</group>
 	</datatypes>
-	<table x="379" y="277" name="model">
+	<table x="447" y="254" name="model">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -51,7 +51,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="855" y="203" name="locations">
+	<table x="190" y="373" name="locations">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -59,11 +59,6 @@
 		<row name="name" null="1" autoincrement="0">
 			<datatype>VARCHAR</datatype>
 			<default>NULL</default>
-		</row>
-		<row name="country_id" null="1" autoincrement="0">
-			<datatype>TINYINT</datatype>
-			<default>NULL</default>
-			<relation table="countries" row="id" />
 		</row>
 		<row name="city_id" null="1" autoincrement="0">
 			<datatype>INT</datatype>
@@ -98,7 +93,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="1086" y="316" name="cities">
+	<table x="32" y="38" name="cities">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -116,7 +111,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="600" y="268" name="machines">
+	<table x="470" y="136" name="machines">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -131,23 +126,11 @@
 			<default>NULL</default>
 			<relation table="model" row="id" />
 		</row>
-		<row name="name" null="1" autoincrement="0">
-			<datatype>VARCHAR</datatype>
-			<default>NULL</default>
-		</row>
-		<row name="rating" null="1" autoincrement="0">
-			<datatype>DECIMAL</datatype>
-			<default>NULL</default>
-		</row>
-		<row name="votes" null="1" autoincrement="0">
-			<datatype>TINYINT</datatype>
-			<default>NULL</default>
-		</row>
 		<key type="PRIMARY" name="">
 			<part>id</part>
 		</key>
 	</table>
-	<table x="385" y="79" name="rates">
+	<table x="457" y="9" name="rates">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -169,7 +152,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="1291" y="164" name="countries">
+	<table x="35" y="150" name="countries">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>INT</datatype>
 			<default>NULL</default>
@@ -186,7 +169,7 @@
 			<part>id</part>
 		</key>
 	</table>
-	<table x="600" y="42" name="notes">
+	<table x="193" y="43" name="notes">
 		<row name="id" null="1" autoincrement="1">
 			<datatype>TINYINT</datatype>
 			<default>NULL</default>
@@ -196,8 +179,17 @@
 			<default>NULL</default>
 			<relation table="machines" row="id" />
 			<relation table="locations" row="id" />
+			<relation table="model" row="id" />
 		</row>
 		<row name="noteable_type" null="1" autoincrement="0">
+			<datatype>VARCHAR</datatype>
+			<default>NULL</default>
+		</row>
+		<row name="user_id" null="1" autoincrement="0">
+			<datatype>TINYINT</datatype>
+			<default>NULL</default>
+		</row>
+		<row name="type" null="1" autoincrement="0">
 			<datatype>VARCHAR</datatype>
 			<default>NULL</default>
 		</row>
@@ -205,16 +197,36 @@
 			<datatype>MEDIUMTEXT</datatype>
 			<default>NULL</default>
 		</row>
-		<row name="user_id" null="1" autoincrement="0">
-			<datatype>TINYINT</datatype>
-			<default>NULL</default>
-		</row>
 		<row name="created_at" null="1" autoincrement="0">
 			<datatype>TINYINT</datatype>
 			<default>NULL</default>
 		</row>
-		<row name="type" null="1" autoincrement="0">
+		<key type="PRIMARY" name="">
+			<part>id</part>
+		</key>
+	</table>
+	<table x="448" y="388" name="ratings">
+		<row name="id" null="1" autoincrement="1">
+			<datatype>INT</datatype>
+			<default>NULL</default>
+		</row>
+		<row name="rateable_id" null="1" autoincrement="0">
+			<datatype>INT</datatype>
+			<default>NULL</default>
+			<relation table="locations" row="id" />
+			<relation table="machines" row="id" />
+			<relation table="model" row="id" />
+		</row>
+		<row name="rateable_type" null="1" autoincrement="0">
 			<datatype>VARCHAR</datatype>
+			<default>NULL</default>
+		</row>
+		<row name="rating" null="1" autoincrement="0">
+			<datatype>INT</datatype>
+			<default>NULL</default>
+		</row>
+		<row name="votes" null="1" autoincrement="0">
+			<datatype>INT</datatype>
 			<default>NULL</default>
 		</row>
 		<key type="PRIMARY" name="">
