@@ -1,6 +1,8 @@
 'use strict';
 
-var _ = require('underscore');
+var _ = require('underscore'),
+  app = require('../../bootstrap/start');
+
 var ConfigObject = require('./configObject');
 
 function Field(attributes) {

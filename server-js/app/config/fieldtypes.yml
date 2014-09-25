@@ -225,9 +225,11 @@ select:
 point:
     eloquent:
         setter: geojson_to_postgis
-        selector: postgis_as_geojson
+        getter: postgis_as_geojson
     sequelize:
         type: STRING
+        setter: geoJsonToString
+        getter: stringToGeoJson
     doctrine:
         type: point
         notnull: false
@@ -235,9 +237,11 @@ point:
 linestring:
     eloquent:
         setter: geojson_to_postgis
-        selector: postgis_as_geojson
+        getter: postgis_as_geojson
     sequelize:
         type: TEXT
+        setter: geoJsonToString
+        getter: stringToGeoJson
     doctrine:
         type: linestring
         notnull: false
@@ -245,9 +249,11 @@ linestring:
 rectangle:
     eloquent:
         setter: geojson_to_postgis
-        selector: postgis_as_geojson
+        getter: postgis_as_geojson
     sequelize:
         type: TEXT
+        setter: geoJsonToString
+        getter: stringToGeoJson
     doctrine:
         type: rectangle
         notnull: false

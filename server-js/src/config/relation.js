@@ -10,7 +10,11 @@ function Relation(attributes) {
 Relation.prototype = Object.create(ConfigObject.prototype);
 
 _.extend(Relation.prototype, {
-  constructor: Relation
+  constructor: Relation,
+
+  isSingle: function() {
+    return this.type === 'belongsTo' || this.type === 'hasOne';
+  }
 });
 
 module.exports = Relation;

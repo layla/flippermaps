@@ -67,7 +67,7 @@ _.extend(FieldCollection.prototype, {
 
   filterByTypeKeys: function(typeKeys) {
     return this.filter(function(field) {
-      return _.contains(typeKeys, field.getType().getKey());
+      return _.contains(typeKeys, field.type);
     });
   },
 
@@ -94,6 +94,12 @@ _.extend(FieldCollection.prototype, {
       'textarea',
       'html',
       'markdown'
+    ]);
+  },
+
+  getJsonFields: function() {
+    return this.filterByTypeKeys([
+      'point'
     ]);
   }
 });

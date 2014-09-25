@@ -5,6 +5,27 @@ users:
             type: string
         password:
             type: string
+    relations:
+        locations:
+            type: hasMany
+        machines:
+            type: hasMany
+
+
+machines:
+    name: machines
+    fields:
+        name:
+            type: text
+        rating:
+            type: text
+        votes:
+            type: text
+    relations:
+        users:
+            type: belongsTo
+        locations:
+            type: hasMany
 
 locations:
     name: locations
@@ -29,16 +50,6 @@ locations:
         machines:
             type: hasMany
 
-machines:
-    name: machines
-    fields:
-        name:
-            type: text
-        rating:
-            type: text
-        votes:
-            type: text
-
 notes:
     name: notes
     fields:
@@ -46,6 +57,9 @@ notes:
             type: string
         type:
             type: string
+    relations:
+        users:
+            type: belongsTo
 
 rates:
     name: rates
@@ -54,6 +68,9 @@ rates:
             type: float
         games:
             type: float
+    relations:
+        users:
+            type: belongsTo
 
 cities:
     name: cities

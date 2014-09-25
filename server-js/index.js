@@ -77,11 +77,22 @@ function ensureAuthenticated(req, res, next) {
   res.redirect('/login');
 }
 
-server.get('/api/:contentTypeKey', ensureAuthenticated, require('./src/routes/list'));
-server.post('/api/:contentTypeKey', require('./src/routes/create'));
-server.get('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/read'));
-server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/update'));
-server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'));
+function logErrors(err, req, res, next) {
+  // console.log(err);
+  // console.error(err.stack);
+  // next(err);
+}
+
+function errorHandler(err, req, res, next) {
+  // res.status(500);
+  // res.render('error', { error: err });
+}
+
+server.get('/api/:contentTypeKey', ensureAuthenticated, require('./src/routes/list'), logErrors, errorHandler);
+server.post('/api/:contentTypeKey', require('./src/routes/create'), logErrors, errorHandler);
+server.get('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/read'), logErrors, errorHandler);
+server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/update'), logErrors, errorHandler);
+server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'), logErrors, errorHandler);
 
 server.get(/.*/, restify.serveStatic({
   'directory': './dist'

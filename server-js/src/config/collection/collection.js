@@ -26,6 +26,19 @@ _.extend(Collection.prototype, {
     return new Collection(items);
   },
 
+  filter: function(cb) {
+    var filteredItems = {};
+    for (var itemKey in this.items) {
+      var item = this.items[itemKey];
+
+      if (cb(item)) {
+        filteredItems[itemKey] = item;
+      }
+    }
+
+    return this.make(filteredItems);
+  },
+
   /**
    * Filters the collection by a key, value and optionally a defaultvalue.
    * Items only get included in the result when the following expression evaluates true:
@@ -155,7 +168,7 @@ _.extend(Collection.prototype, {
 
 // Mixin methods (stolen from backbone collection)
 var methods = ['forEach', 'each', 'map', 'collect', 'reduce', 'foldl',
-  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'filter', 'select',
+  'inject', 'reduceRight', 'foldr', 'find', 'detect', 'select',
   'reject', 'every', 'all', 'some', 'any', 'include', 'contains', 'invoke',
   'max', 'min', 'size', 'head', 'take', 'initial', 'rest',
   'tail', 'drop', 'last', 'without', 'difference', 'indexOf', 'shuffle',

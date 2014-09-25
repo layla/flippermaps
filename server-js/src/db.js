@@ -46,6 +46,7 @@ _.extend(DB.prototype, {
   getSequelizeSchemaForContentType: function(contentType) {
     var config
       , fieldTypeConfig
+      , that = this
       , schema = {}
       , fieldTypes = this.fieldTypes;
 
@@ -56,6 +57,7 @@ _.extend(DB.prototype, {
       }
 
       config = _.clone(fieldTypeConfig.sequelize);
+
       config.type = Sequelize[config.type];
       if (config.defaultValue == "UUIDV4") {
         config.defaultValue = Sequelize.UUIDV4;
@@ -66,47 +68,81 @@ _.extend(DB.prototype, {
     return schema;
   },
 
+  getSetterMethodsForContentType: function(contentType) {
+    var methods = {};
+    contentType.getFields().getJsonFields().each(function(field) {
+      methods[field.key] = function(value) {
+        console.log('setting json field');
+        this.setDataValue(field.key, JSON.stringify(value));
+      };
+    });
+
+    return methods;
+  },
+
+  getGetterMethodsForContentType: function(contentType) {
+    var methods = {};
+    contentType.getFields().getJsonFields().each(function(field) {
+      methods[field.key] = function() {
+        console.log('getting json field', field.key, this.getDataValue(field.key));
+        if ( ! this.getDataValue(field.key)) {
+          return this.getDataValue(field.key);
+        }
+
+        return JSON.parse(this.getDataValue(field.key));
+      };
+    });
+
+    return methods;
+  },
+
+  getInstanceMethodsForContentType: function(contentType) {
+    return {
+      hasRole: function(role) {
+        return _.contains(this.roles, 'ROLE_' + role);
+      },
+
+      toJSON: function() {
+        var value
+          , result = _.clone(this.get());
+
+        if (this.options.includeMap) {
+          _.each(this.options.includeMap, function(__, key) {
+            value = result[key];
+
+            if ( ! result.links) {
+              result.links = {};
+            }
+
+            result.links[key] = value;
+            delete result[key];
+          });
+        }
+
+        return result;
+      }
+    };
+  },
+
   setupSchema: function() {
     var schema
       , that = this;
 
     this.contentTypes.each(function(contentType) {
       schema = that.getSequelizeSchemaForContentType(contentType);
-      console.log(schema, contentType);
       that.models[contentType.key] = that.connection.define(contentType.key, schema, {
         timestamps: false,
         underscored: true,
-        instanceMethods: {
-          hasRole: function(role) {
-            return _.contains(this.roles, 'ROLE_' + role);
-          },
-          toJSON: function() {
-            var value
-              , result = _.clone(this.dataValues);
-
-            if (this.options.includeMap) {
-              _.each(this.options.includeMap, function(__, key) {
-                value = result[key];
-
-                if ( ! result.links) {
-                  result.links = {};
-                }
-
-                result.links[key] = value;
-                delete result[key];
-              });
-            }
-
-            return result;
-          }
-        }
+        getterMethods: that.getGetterMethodsForContentType(contentType),
+        setterMethods: that.getSetterMethodsForContentType(contentType),
+        instanceMethods: that.getInstanceMethodsForContentType(contentType)
       });
     });
 
     this.contentTypes.filterBy('system', false, false).each(function(contentType) {
       contentType.getRelations().getIncoming().each(function(relation) {
-        that.models[contentType.key].hasMany(that.models[relation.key], {
-          through: contentType.key + '_' + relation.key,
+        that.models[contentType.key][relation.type](that.models[relation.key], {
+          // through: contentType.key + '_' + relation.key,
           // onDelete: 'CASCADE',
           // hooks: true
         });
@@ -114,7 +150,7 @@ _.extend(DB.prototype, {
 
       contentType.getRelations().getOutgoing().each(function(relation) {
         that.models[contentType.key][relation.type](that.models[relation.key], {
-          through: relation.key + '_' + contentType.key,
+          // through: relation.key + '_' + contentType.key,
           // onDelete: 'CASCADE',
           // hooks: true
         });

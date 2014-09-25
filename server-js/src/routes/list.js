@@ -11,7 +11,7 @@ module.exports = function (req, res, next) {
 
   _.each(relationKeys, function(relationKey) {
     include.push(app.db.models[relationKey]);
-  })
+  });
 
   app.db.models[contentTypeKey].findAll({
     include: include,
