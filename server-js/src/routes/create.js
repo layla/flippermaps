@@ -9,6 +9,9 @@ module.exports = function (req, res, next) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
+  app.events.emit('create.before', contentType, req);
+  app.events.emit(contentTypeKey + '::create.before', contentType, req);
+
   app.db.models[contentTypeKey].create(req.body).success(function (item) {
     if (req.body.links) {
       _.each(req.body.links, function (ids, typeKey) {
@@ -30,14 +33,24 @@ module.exports = function (req, res, next) {
             next(new Error('The ' + typeKey + ' relationship expects a array to be given'));
           }
 
-          app.db.models[typeKey].findAll({
-            where: {id: ids}
-          }).success(function(relatedItems) {
-            item['set' + capitaliseFirstLetter(typeKey)](relatedItems);
+          var relatedItems = [];
+          _.each(ids, function (id) {
+            relatedItems.push(app.db.models[typeKey].build({
+              id: id
+            }));
           });
+
+          // app.db.models[typeKey].findAll({
+          //   where: {id: ids}
+          // }).success(function(relatedItems) {
+            item['set' + capitaliseFirstLetter(typeKey)](relatedItems);
+          // });
         }
       });
     }
+
+    app.events.emit('create.after', contentType, item);
+    app.events.emit(contentTypeKey + '::create.after', contentType, item);
 
     res.send(item);
     return next();

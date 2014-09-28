@@ -1,12 +1,10 @@
 var _ = require('underscore')
   , Sequelize = require('sequelize');
 
-function DB(config, locales, contentTypes, fieldTypes, defaultFields) {
+function DB(config, contentTypes, fieldTypes) {
   this.config = config;
-  this.locales = locales;
   this.contentTypes = contentTypes;
   this.fieldTypes = fieldTypes;
-  this.defaultFields = defaultFields;
   this.models = {};
 
   this.connection = this.connect();
@@ -35,14 +33,6 @@ _.extend(DB.prototype, {
     return sequelize;
   },
 
-  getDatabaseFieldsForContentType: function(contentType) {
-    var fields = contentType.getFields();
-
-    return this.defaultFields.clone()
-      .merge(fields)
-      .getAsDatabaseFields(this.locales);
-  },
-
   getSequelizeSchemaForContentType: function(contentType) {
     var config
       , fieldTypeConfig
@@ -50,7 +40,7 @@ _.extend(DB.prototype, {
       , schema = {}
       , fieldTypes = this.fieldTypes;
 
-    this.getDatabaseFieldsForContentType(contentType).each(function(field) {
+    contentType.getDatabaseFields().each(function(field) {
       fieldTypeConfig = fieldTypes.get(field.type);
       if ( ! fieldTypeConfig) {
         throw new Error("No config found for fieldtype: " + field.type);
@@ -70,7 +60,7 @@ _.extend(DB.prototype, {
 
   getSetterMethodsForContentType: function(contentType) {
     var methods = {};
-    contentType.getFields().getJsonFields().each(function(field) {
+    contentType.getDatabaseFields().getJsonFields().each(function(field) {
       methods[field.key] = function(value) {
         console.log('setting json field');
         this.setDataValue(field.key, JSON.stringify(value));
@@ -82,7 +72,7 @@ _.extend(DB.prototype, {
 
   getGetterMethodsForContentType: function(contentType) {
     var methods = {};
-    contentType.getFields().getJsonFields().each(function(field) {
+    contentType.getDatabaseFields().getJsonFields().each(function(field) {
       methods[field.key] = function() {
         console.log('getting json field', field.key, this.getDataValue(field.key));
         if ( ! this.getDataValue(field.key)) {
@@ -139,7 +129,7 @@ _.extend(DB.prototype, {
       });
     });
 
-    this.contentTypes.filterBy('system', false, false).each(function(contentType) {
+    this.contentTypes.each(function(contentType) {
       contentType.getRelations().getIncoming().each(function(relation) {
         that.models[contentType.key][relation.type](that.models[relation.key], {
           // through: contentType.key + '_' + relation.key,

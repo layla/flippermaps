@@ -23,15 +23,17 @@ _.extend(FieldCollection.prototype, {
   },
 
   getAsDatabaseFields: function(locales) {
-    var itemKey,
-      results = {};
+    var itemKey
+      , newItem
+      , results = {};
 
     _.each(this.items, function(item, key) {
       if (item.get('multilanguage', false) == true) {
         _.each(locales, function(locale) {
+          newItem = _.clone(item);
           itemKey = key + '_' + locale;
-          item.key = itemKey;
-          results[itemKey] = item;
+          newItem.key = itemKey;
+          results[itemKey] = newItem;
         });
       } else {
         results[key] = item;

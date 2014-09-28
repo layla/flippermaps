@@ -16,14 +16,14 @@ machines:
     name: machines
     fields:
         name:
-            type: text
+            type: string
         rating:
-            type: text
+            type: string
         votes:
-            type: text
+            type: integer
     relations:
         users:
-            type: belongsTo
+            type: hasMany
         locations:
             type: hasMany
 
@@ -46,7 +46,7 @@ locations:
             type: text
     relations:
         users:
-            type: belongsTo
+            type: hasMany
         machines:
             type: hasMany
 
@@ -59,7 +59,7 @@ notes:
             type: string
     relations:
         users:
-            type: belongsTo
+            type: hasMany
 
 rates:
     name: rates
@@ -70,7 +70,7 @@ rates:
             type: float
     relations:
         users:
-            type: belongsTo
+            type: hasMany
 
 cities:
     name: cities

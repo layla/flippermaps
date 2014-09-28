@@ -94,6 +94,72 @@ server.get('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/route
 server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/update'), logErrors, errorHandler);
 server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'), logErrors, errorHandler);
 
+
+  app.es.indices.create({
+    index: 'flippermaps'
+  }, function() {
+    app.contentTypes.each(function (contentType) {
+      app.elasticsearchService.createMapping(contentType);
+    });
+  });
+
+server.get('/import', function(req, res, next) {
+  var fs = require('fs')
+    , JSONStream = require('JSONStream')
+    , _ = require('underscore')
+    , create = require('./src/routes/create');
+
+  var file = __dirname + '/../world.json';
+  var rs = fs.createReadStream(file);
+
+  var parser = JSONStream.parse([true]);
+
+  rs.pipe(parser)
+    .on('data', function(flipper) {
+      create({
+        params: {
+          contentTypeKey: 'machines'
+        },
+        body: {
+          name: flipper.machine,
+          rating: Math.ceil((flipper.stars / 3) * 10),
+          datecreated: new Date,
+          datechanged: new Date,
+          votes: 10
+        }
+      }, {
+        send: function(machine) {
+          create({
+            params: {
+              contentTypeKey: 'locations'
+            },
+            body: {
+              name: flipper.name,
+              pin: flipper.pin,
+              state_name: flipper.state,
+              state_code: flipper.statecode,
+              street: flipper.street,
+              zipcode: flipper.zipcode,
+              housenumber: flipper.number,
+              datecreated: new Date,
+              datechanged: new Date,
+              links: {
+                machines: [machine.get('id')]
+              }
+            }
+          }, {
+            send: function(location) {
+            }
+          }, function() {});
+        }
+      }, function() {});
+    })
+    .on('close', function() {
+      console.log('DONE!');
+      res.send('DONE!');
+    });
+});
+
 server.get(/.*/, restify.serveStatic({
   'directory': './dist'
 }));
