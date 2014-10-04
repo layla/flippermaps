@@ -1,5 +1,8 @@
+'use strict';
+
 var _ = require('underscore')
-  , Sequelize = require('sequelize');
+  , Sequelize = require('sequelize')
+  , inflection = require('inflection');
 
 function DB(config, contentTypes, fieldTypes) {
   this.config = config;
@@ -17,16 +20,17 @@ _.extend(DB.prototype, {
     var config = this.config
       , sequelize = new Sequelize(config.databasename, config.username, config.password, {
         dialect: config.driver,
-        port: 5432
+        port: 5432,
+        logging: false
       });
 
     sequelize
       .authenticate()
       .complete(function(err) {
         if (!!err) {
-          console.log('Unable to connect to the database:', err)
+          console.log('Unable to connect to the database:', err);
         } else {
-          console.log('Connection has been established successfully.')
+          console.log('Connection has been established successfully.');
         }
       });
 
@@ -36,7 +40,6 @@ _.extend(DB.prototype, {
   getSequelizeSchemaForContentType: function(contentType) {
     var config
       , fieldTypeConfig
-      , that = this
       , schema = {}
       , fieldTypes = this.fieldTypes;
 
@@ -49,7 +52,7 @@ _.extend(DB.prototype, {
       config = _.clone(fieldTypeConfig.sequelize);
 
       config.type = Sequelize[config.type];
-      if (config.defaultValue == "UUIDV4") {
+      if (config.defaultValue === "UUIDV4") {
         config.defaultValue = Sequelize.UUIDV4;
       }
       schema[field.key] = config;
@@ -62,7 +65,6 @@ _.extend(DB.prototype, {
     var methods = {};
     contentType.getDatabaseFields().getJsonFields().each(function(field) {
       methods[field.key] = function(value) {
-        console.log('setting json field');
         this.setDataValue(field.key, JSON.stringify(value));
       };
     });
@@ -74,7 +76,6 @@ _.extend(DB.prototype, {
     var methods = {};
     contentType.getDatabaseFields().getJsonFields().each(function(field) {
       methods[field.key] = function() {
-        console.log('getting json field', field.key, this.getDataValue(field.key));
         if ( ! this.getDataValue(field.key)) {
           return this.getDataValue(field.key);
         }
@@ -93,18 +94,23 @@ _.extend(DB.prototype, {
       },
 
       toJSON: function() {
-        var value
+        var links
           , result = _.clone(this.get());
 
-        if (this.options.includeMap) {
-          _.each(this.options.includeMap, function(__, key) {
-            value = result[key];
+        result.links = [];
 
-            if ( ! result.links) {
-              result.links = {};
+        if (this.options.includeNames) {
+          _.each(this.options.includeNames, function(key) {
+            var relatedItems = result[key];
+            if (_.isArray(relatedItems)) {
+              links = _.pluck(relatedItems, 'id');
+            } else if (relatedItems) {
+              links = relatedItems.id;
+            } else {
+              links = [];
             }
 
-            result.links[key] = value;
+            result.links = result.links.concat(links);
             delete result[key];
           });
         }
@@ -116,6 +122,7 @@ _.extend(DB.prototype, {
 
   setupSchema: function() {
     var schema
+      , relationOptions
       , that = this;
 
     this.contentTypes.each(function(contentType) {
@@ -131,19 +138,42 @@ _.extend(DB.prototype, {
 
     this.contentTypes.each(function(contentType) {
       contentType.getRelations().getIncoming().each(function(relation) {
-        that.models[contentType.key][relation.type](that.models[relation.key], {
-          // through: contentType.key + '_' + relation.key,
-          // onDelete: 'CASCADE',
-          // hooks: true
-        });
+          relationOptions = {};
+          if (relation.through) {
+            schema = {};
+            schema[inflection.singularize(contentType.key) + '_id'] = Sequelize.UUID;
+            schema[inflection.singularize(relation.key) + '_id'] = Sequelize.UUID;
+            that.models[relation.through] = that.connection.define(relation.through, schema, {
+              underscored: true
+            });
+            relationOptions = {
+              through: that.models[relation.through],
+              // onDelete: 'CASCADE',
+              // hooks: true
+            };
+          }
+
+          that.models[relation.key][relation.type](that.models[contentType.key], relationOptions);
       });
 
       contentType.getRelations().getOutgoing().each(function(relation) {
-        that.models[contentType.key][relation.type](that.models[relation.key], {
-          // through: relation.key + '_' + contentType.key,
-          // onDelete: 'CASCADE',
-          // hooks: true
-        });
+        relationOptions = {};
+
+        if (relation.through) {
+          schema = {};
+          schema[inflection.singularize(contentType.key) + '_id'] = Sequelize.UUID;
+          schema[inflection.singularize(relation.key) + '_id'] = Sequelize.UUID;
+          that.models[relation.through] = that.connection.define(relation.through, schema, {
+            underscored: true
+          });
+          relationOptions = {
+            through: that.models[relation.through],
+            // onDelete: 'CASCADE',
+            // hooks: true
+          };
+        }
+
+        that.models[contentType.key][relation.type](that.models[relation.key], relationOptions);
       });
     });
   },
@@ -155,9 +185,9 @@ _.extend(DB.prototype, {
       })
       .complete(function(err) {
          if (!!err) {
-           console.log('An error occurred while creating the table:', err)
+           console.log('An error occurred while creating the table:', err);
          } else {
-           console.log('It worked!')
+           console.log('It worked!');
          }
       });
   }
