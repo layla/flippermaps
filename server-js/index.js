@@ -99,72 +99,13 @@ server.get('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/route
 server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/update'), logErrors, errorHandler);
 server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'), logErrors, errorHandler);
 
+server.get('/import', require('./src/routes/import'));
+
 app.es.indices.create({
   index: 'flippermaps'
 }, function() {
   app.contentTypes.each(function (contentType) {
     app.elasticsearchService.createMapping(contentType);
-  });
-});
-
-server.get('/import', function(req, res, next) {
-  var rs
-    , fs = require('fs')
-    , JSONStream = require('JSONStream')
-    , file = __dirname + '/../world.json'
-    , parser = JSONStream.parse([true])
-    , usersContentType = app.contentTypes.get('users')
-    , machineContentType = app.contentTypes.get('machines')
-    , locationContentType = app.contentTypes.get('locations')
-    , es = require('event-stream');
-
-  console.log('* importing world');
-  app.storageService.create(usersContentType, {
-    email: 'k.schmeets@gmail.com',
-    password: 'test'
-  }).then(function(user) {
-    rs = fs.createReadStream(file);
-
-    rs.pipe(parser)
-      .pipe(es.through(function write(data) {
-        var that = this;
-
-        this.pause();
-
-        return app.storageService.create(locationContentType, {
-          name: data.name,
-          pin: data.pin,
-          state_name: data.state,
-          state_code: data.statecode,
-          street: data.street,
-          zipcode: data.zipcode,
-          housenumber: data.number,
-          datecreated: new Date(),
-          datechanged: new Date()
-        }/*, {
-          users: user.id
-        }*/).then(function(location) {
-          return app.storageService.create(machineContentType, {
-            name: data.machine,
-            rating: Math.ceil((data.stars / 3) * 10),
-            datecreated: new Date(),
-            datechanged: new Date(),
-            votes: 10
-          }, {
-            /*users: user.id,*/
-            locations: location.id
-          }).then(function() {
-            that.resume();
-          });
-        });
-      },
-      function end () { //optional
-        this.queue(null);
-      }))
-      .on('end', function() {
-        console.log('DONE!');
-        res.send('DONE!');
-      });
   });
 });
 
