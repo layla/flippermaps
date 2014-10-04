@@ -1,0 +1,27 @@
+{
+  "id": {
+    "type": "auto-guid",
+    "purpose": "id",
+    "options": {
+      "hidden": true
+    }
+  },
+  "datecreated": {
+    "type": "datetime",
+    "purpose": "datecreated",
+    "options": {
+      "hidden": true
+    }
+  },
+  "datechanged": {
+    "type": "datetime",
+    "purpose": "datechanged",
+    "options": {
+      "hidden": true
+    }
+  },
+  "weight": {
+    "type": "sequence",
+    "purpose": "weight"
+  }
+}

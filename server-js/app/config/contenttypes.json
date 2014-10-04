@@ -1,0 +1,128 @@
+{
+  "users": {
+    "name": "users",
+    "fields": {
+      "email": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      }
+    },
+    "relations": {
+      "locations": {
+        "type": "hasMany"
+      },
+      "machines": {
+        "type": "hasMany"
+      }
+    }
+  },
+  "machines": {
+    "name": "machines",
+    "fields": {
+      "name": {
+        "type": "string"
+      },
+      "rating": {
+        "type": "string"
+      },
+      "votes": {
+        "type": "integer"
+      }
+    },
+    "relations": {
+      "locations": {
+        "type": "belongsTo"
+      },
+      "users": {
+        "type": "belongsTo"
+      }
+    }
+  },
+  "locations": {
+    "name": "locations",
+    "fields": {
+      "name": {
+        "type": "text"
+      },
+      "pin": {
+        "type": "point"
+      },
+      "state_name": {
+        "type": "text"
+      },
+      "state_code": {
+        "type": "text"
+      },
+      "street": {
+        "type": "text"
+      },
+      "zipcode": {
+        "type": "text"
+      },
+      "housenumber": {
+        "type": "text"
+      }
+    },
+    "relations": {
+      "users": {
+        "type": "belongsTo"
+      },
+      "machines": {
+        "type": "hasMany"
+      }
+    }
+  },
+  "notes": {
+    "name": "notes",
+    "fields": {
+      "note": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
+      }
+    },
+    "relations": {
+      "users": {
+        "type": "belongsTo"
+      }
+    }
+  },
+  "rates": {
+    "name": "rates",
+    "fields": {
+      "price": {
+        "type": "float"
+      },
+      "games": {
+        "type": "float"
+      }
+    },
+    "relations": {
+      "users": {
+        "type": "belongsTo"
+      }
+    }
+  },
+  "cities": {
+    "name": "cities",
+    "fields": {
+      "name": {
+        "type": "text"
+      }
+    }
+  },
+  "countries": {
+    "name": "countries",
+    "fields": {
+      "name": {
+        "type": "text"
+      },
+      "code": {
+        "type": "text"
+      }
+    }
+  }
+}
