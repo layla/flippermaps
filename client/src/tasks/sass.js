@@ -11,7 +11,7 @@ module.exports = function() {
 
   gulp.src([
       './node_modules/leaflet/dist/leaflet.css',
-      './node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css',
+      // './node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css',
       './bower_components/sidebar-v2/css/leaflet-sidebar.css',
       './node_modules/font-awesome/css/font-awesome.css',
       './node_modules/leaflet.usermarker/src/leaflet.usermarker.css'

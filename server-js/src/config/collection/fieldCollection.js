@@ -28,7 +28,7 @@ _.extend(FieldCollection.prototype, {
       , results = {};
 
     _.each(this.items, function(item, key) {
-      if (item.get('multilanguage', false) == true) {
+      if (item.get('multilanguage', false) === true) {
         _.each(locales, function(locale) {
           newItem = _.clone(item);
           itemKey = key + '_' + locale;
@@ -74,9 +74,9 @@ _.extend(FieldCollection.prototype, {
   },
 
   filterByGroup: function() {
-      var groups = _.uniq(this.listsOption('group'));
+      var results = {},
+        groups = _.uniq(this.listsOption('group'));
 
-      var results = {};
       _.each(groups, function(group) {
         results[group] = this.filterByOption('group', group);
       });

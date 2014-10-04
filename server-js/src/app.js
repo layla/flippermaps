@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore')
   , elasticsearch = require('elasticsearch')
   , DB = require('./db')
@@ -6,7 +8,8 @@ var _ = require('underscore')
   , ContentTypeCollection = require('./config/collection/contentTypeCollection')
   , FieldCollection = require('./config/collection/fieldCollection')
   , EventEmitter = require('events').EventEmitter
-  , ElasticsearchService = require('../src/elasticsearchService');
+  , ElasticsearchService = require('../src/elasticsearchService')
+  , StorageService = require('../src/storageService');
 
 function App(attributes) {
   _.extend(this, attributes);
@@ -15,12 +18,14 @@ function App(attributes) {
   this.setupEventEmitter();
   this.setupElasticsearch();
   this.setupElasticsearchService();
+  this.setupStorageService();
 }
 
 _.extend(App.prototype, {
   setupConfig: function() {
-    var config = configLoader.load(this.configFiles);
-    var locales = _.keys(config.app.locales);
+    var config = configLoader.load(this.configFiles)
+      , locales = _.keys(config.app.locales);
+
     this.config = config;
     this.defaultFields = new FieldCollection(this.config.defaultfields);
     this.contentTypes = new ContentTypeCollection(this.config.contenttypes, this.defaultFields, locales);
@@ -33,18 +38,22 @@ _.extend(App.prototype, {
   },
 
   setupEventEmitter: function() {
-    this.events = new EventEmitter;
+    this.events = new EventEmitter();
   },
 
   setupElasticsearch: function() {
     this.es = new elasticsearch.Client({
       host: 'localhost:9200',
-      log: 'trace'
+      // log: 'trace'
     });
   },
 
   setupElasticsearchService: function() {
     this.elasticsearchService = new ElasticsearchService(this.es);
+  },
+
+  setupStorageService: function() {
+    this.storageService = new StorageService(this.db.models, this.events);
   }
 });
 

@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore')
   , fs = require('fs')
   , yaml = require('js-yaml');

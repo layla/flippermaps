@@ -17,7 +17,7 @@ _.extend(ContentType.prototype, {
   constructor: ContentType,
 
   getFields: function() {
-    return this.defaultFields.merge(new FieldCollection(this.fields ? this.fields : {}));
+    return this.defaultFields.merge(new FieldCollection(this.fields || {}));
   },
 
   getDatabaseFields: function() {
@@ -25,7 +25,7 @@ _.extend(ContentType.prototype, {
   },
 
   getRelations: function() {
-    return new RelationCollection(this.relations ? this.relations : {});
+    return new RelationCollection(this.relations || {});
   }
 });
 

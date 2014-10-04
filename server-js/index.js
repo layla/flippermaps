@@ -1,3 +1,5 @@
+'use strict';
+
 var app = require('./bootstrap/start')
   , fs = require('fs')
   , restify = require('restify')
@@ -7,7 +9,7 @@ var app = require('./bootstrap/start')
   , LocalStrategy = require('passport-local').Strategy;
 
 passport.use(new LocalStrategy(function(email, password, done) {
-  app.db.models.users.find({ email: email }).success(function (user) {
+  app.db.models.users.find({ email: email }).then(function (user) {
     if (!user) { return done(null, false); }
     if (user.password !== password) { return done(null, false); }
     return done(null, user);
@@ -21,13 +23,13 @@ passport.serializeUser(function(user, done) {
 });
 
 passport.deserializeUser(function(userId, done) {
-  app.db.models.users.findAll({
+  app.db.models.users.find({
     where: {
       id: userId
     }
-  }).success(function (users) {
-    if (users.length > 0) {
-      done(null, users[0]);
+  }).then(function (user) {
+    if (user) {
+      done(null, user);
     } else {
       done(null, null);
     }
@@ -38,7 +40,7 @@ var server = restify.createServer({
   name: 'flippermaps',
   version: '1.0.0'
 });
-server.use(redirect())
+server.use(redirect());
 server.use(restify.acceptParser(server.acceptable));
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
@@ -59,6 +61,7 @@ server.post('/api/login', function (req, res, next) {
   },
   passport.authenticate('local', { failureRedirect: '/api/login' }),
   function(req, res) {
+    console.log(req);
     res.redirect('/');
   });
 
@@ -88,76 +91,81 @@ function errorHandler(err, req, res, next) {
   // res.render('error', { error: err });
 }
 
+server.get('/config/:file', require('./src/routes/config'), logErrors, errorHandler);
+
 server.get('/api/:contentTypeKey', ensureAuthenticated, require('./src/routes/list'), logErrors, errorHandler);
 server.post('/api/:contentTypeKey', require('./src/routes/create'), logErrors, errorHandler);
 server.get('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/read'), logErrors, errorHandler);
 server.put('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/update'), logErrors, errorHandler);
 server.del('/api/:contentTypeKey/:id', ensureAuthenticated, require('./src/routes/delete'), logErrors, errorHandler);
 
-
-  app.es.indices.create({
-    index: 'flippermaps'
-  }, function() {
-    app.contentTypes.each(function (contentType) {
-      app.elasticsearchService.createMapping(contentType);
-    });
+app.es.indices.create({
+  index: 'flippermaps'
+}, function() {
+  app.contentTypes.each(function (contentType) {
+    app.elasticsearchService.createMapping(contentType);
   });
+});
 
 server.get('/import', function(req, res, next) {
-  var fs = require('fs')
+  var rs
+    , fs = require('fs')
     , JSONStream = require('JSONStream')
-    , _ = require('underscore')
-    , create = require('./src/routes/create');
+    , file = __dirname + '/../world.json'
+    , parser = JSONStream.parse([true])
+    , usersContentType = app.contentTypes.get('users')
+    , machineContentType = app.contentTypes.get('machines')
+    , locationContentType = app.contentTypes.get('locations')
+    , es = require('event-stream');
 
-  var file = __dirname + '/../world.json';
-  var rs = fs.createReadStream(file);
+  console.log('* importing world');
+  app.storageService.create(usersContentType, {
+    email: 'k.schmeets@gmail.com',
+    password: 'test'
+  }).then(function(user) {
+    rs = fs.createReadStream(file);
 
-  var parser = JSONStream.parse([true]);
+    rs.pipe(parser)
+      .pipe(es.through(function write(data) {
+        var that = this;
 
-  rs.pipe(parser)
-    .on('data', function(flipper) {
-      create({
-        params: {
-          contentTypeKey: 'machines'
-        },
-        body: {
-          name: flipper.machine,
-          rating: Math.ceil((flipper.stars / 3) * 10),
-          datecreated: new Date,
-          datechanged: new Date,
-          votes: 10
-        }
-      }, {
-        send: function(machine) {
-          create({
-            params: {
-              contentTypeKey: 'locations'
-            },
-            body: {
-              name: flipper.name,
-              pin: flipper.pin,
-              state_name: flipper.state,
-              state_code: flipper.statecode,
-              street: flipper.street,
-              zipcode: flipper.zipcode,
-              housenumber: flipper.number,
-              datecreated: new Date,
-              datechanged: new Date,
-              links: {
-                machines: [machine.get('id')]
-              }
-            }
+        this.pause();
+
+        return app.storageService.create(locationContentType, {
+          name: data.name,
+          pin: data.pin,
+          state_name: data.state,
+          state_code: data.statecode,
+          street: data.street,
+          zipcode: data.zipcode,
+          housenumber: data.number,
+          datecreated: new Date(),
+          datechanged: new Date()
+        }/*, {
+          users: user.id
+        }*/).then(function(location) {
+          return app.storageService.create(machineContentType, {
+            name: data.machine,
+            rating: Math.ceil((data.stars / 3) * 10),
+            datecreated: new Date(),
+            datechanged: new Date(),
+            votes: 10
           }, {
-            send: function(location) {
-            }
-          }, function() {});
-        }
-      }, function() {});
-    })
-    .on('close', function() {
-      console.log('DONE!');
-      res.send('DONE!');
-    });
+            /*users: user.id,*/
+            locations: location.id
+          }).then(function() {
+            that.resume();
+          });
+        });
+      },
+      function end () { //optional
+        this.queue(null);
+      }))
+      .on('end', function() {
+        console.log('DONE!');
+        res.send('DONE!');
+      });
+  });
 });
 
 server.get(/.*/, restify.serveStatic({

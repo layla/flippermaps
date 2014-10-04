@@ -27,9 +27,12 @@ _.extend(Collection.prototype, {
   },
 
   filter: function(cb) {
-    var filteredItems = {};
-    for (var itemKey in this.items) {
-      var item = this.items[itemKey];
+    var itemKey,
+      item,
+      filteredItems = {};
+
+    for (itemKey in this.items) {
+      item = this.items[itemKey];
 
       if (cb(item)) {
         filteredItems[itemKey] = item;
@@ -50,9 +53,12 @@ _.extend(Collection.prototype, {
    * @param {String} default
    */
   filterBy: function(key, value, def) {
-    var filteredItems = {};
-    for (var itemKey in this.items) {
-      var item = this.items[itemKey];
+    var itemKey,
+      item,
+      filteredItems = {};
+
+    for (itemKey in this.items) {
+      item = this.items[itemKey];
 
       if (item.get(key, def) === value) {
         filteredItems[itemKey] = item;
@@ -83,9 +89,9 @@ _.extend(Collection.prototype, {
   first: function() {
     if (_.isArray(this.items)) {
       return _.first(this.items);
-    } else {
-      return _.first(_.values(this.items));
     }
+
+    return _.first(_.values(this.items));
   },
 
   /**
@@ -155,9 +161,10 @@ _.extend(Collection.prototype, {
    */
   toArray: function() {
     var item,
+      key,
       results = [];
 
-    for (var key in this.items) {
+    for (key in this.items) {
       item = this.items[key];
       results.push(item);
     }
