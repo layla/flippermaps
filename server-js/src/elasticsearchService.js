@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('underscore');
 
 function ElasticsearchService(es) {
@@ -8,19 +10,25 @@ _.extend(ElasticsearchService.prototype, {
   index: function (contentType, item) {
     var value
       , params
-      , data = item.toJSON();
+      , data = item.toJSON()
+      , fields = contentType.getDatabaseFields();
 
-    contentType.getFields().filterByTypeKey('point').each(function (field) {
+    fields.filterByTypeKey('point').each(function (field) {
       value = data[field.key];
       if (value && value.coordinates) {
         data[field.key] = value.coordinates;
       }
     });
 
-    contentType.getFields().filterByTypeKey('datetime').each(function (field) {
+    fields.filterByTypeKey('datetime').each(function (field) {
       value = data[field.key];
       if (value) {
-        data[field.key] = value.getFullYear() + '-' + ('0' + (value.getMonth() + 1)).slice(-2) + '-' + ('0' + value.getDate()).slice(-2) + ' ' + ('0' + (value.getHours() + 1)).slice(-2) + ':' + ('0' + value.getMinutes()).slice(-2) + ':' + ('0' + value.getSeconds()).slice(-2);
+        data[field.key] = value.getFullYear() + '-'
+          + ('0' + (value.getMonth() + 1)).slice(-2) + '-'
+          + ('0' + value.getDate()).slice(-2) + ' '
+          + ('0' + (value.getHours() + 1)).slice(-2) + ':'
+          + ('0' + value.getMinutes()).slice(-2) + ':'
+          + ('0' + value.getSeconds()).slice(-2);
       }
     });
 
@@ -30,7 +38,7 @@ _.extend(ElasticsearchService.prototype, {
       body: data
     };
 
-    this.es.index(params);
+    return this.es.index(params);
   },
 
   createMapping: function (contentType) {
@@ -38,33 +46,36 @@ _.extend(ElasticsearchService.prototype, {
       , indexName = 'flippermaps';
 
     mapping[contentType.key] = {
+      _id: {
+        path: 'id'
+      },
       properties: {}
     };
 
     contentType.getDatabaseFields().each(function (field) {
       switch (field.type) {
         case 'auto-guid':
-          mapping[contentType.key]['properties'][field.key] = {
+          mapping[contentType.key].properties[field.key] = {
             type: 'string',
             index: 'not_analyzed'
           };
           break;
         case 'point':
-          mapping[contentType.key]['properties'][field.key] = {
+          mapping[contentType.key].properties[field.key] = {
             type: 'geo_point'
           };
           break;
         case 'linestring':
         case 'area':
         case 'polygon':
-          mapping[contentType.key]['properties'][field.key] = {
+          mapping[contentType.key].properties[field.key] = {
             type: 'geo_shape',
             tree: 'quadtree',
             precision: '10m'
           };
           break;
         case 'datetime':
-          mapping[contentType.key]['properties'][field.key] = {
+          mapping[contentType.key].properties[field.key] = {
             type: 'date',
             format: 'yyyy-MM-dd HH:mm:ss'
           };
