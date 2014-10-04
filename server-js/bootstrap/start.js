@@ -19,8 +19,8 @@ var app = new App({
   // console.log('create.before:command', command);
 // });
 
-app.events.on('create.after', function createAfterEventHandler(evt) {
-  this.emit('createafterstarted', 'yeey');
+// app.events.on('create.after', function createAfterEventHandler(evt) {
+function createAfterEventHandler(evt) {
   console.log('ES: Syncing ' + evt.contentType.key + ':' + evt.item.id);
 
   // retrieve the latest version of the created item from the database, including it's related items
@@ -52,6 +52,7 @@ app.events.on('create.after', function createAfterEventHandler(evt) {
           // check if there is a backlink, in case of a backlink we will update the related item(s)
           if (backLink) {
             if (relation.isSingle()) {
+              console.log('ES: Syncing related ' + relatedContentType.key + ':' + relatedIdsForRelation);
               operation = app.storageService.find(relatedContentType, relatedIdsForRelation).then(function(item) {
                 return app.elasticsearchService.index(relatedContentType, item);
               });
@@ -69,7 +70,8 @@ app.events.on('create.after', function createAfterEventHandler(evt) {
         return item;
       });
     });
-});
+}
+// });
 
 module.exports = app;
 
