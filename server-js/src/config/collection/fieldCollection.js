@@ -74,14 +74,14 @@ _.extend(FieldCollection.prototype, {
   },
 
   filterByGroup: function() {
-      var results = {},
-        groups = _.uniq(this.listsOption('group'));
+    var results = {},
+      groups = _.uniq(this.listsOption('group'));
 
-      _.each(groups, function(group) {
-        results[group] = this.filterByOption('group', group);
-      });
+    _.each(groups, function(group) {
+      results[group] = this.filterByOption('group', group);
+    });
 
-      return this.make(results);
+    return this.make(results);
   },
 
   forPurpose: function(purpose) {
