@@ -3,3 +3,42 @@ body, html, #map {
   height: 100%;
   margin: 0;
 }
+
+.marker-cluster div {
+  width: 34px;
+  height: 34px;
+  background: url(../images/greydot.png);
+  text-align: center;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  color: #fff;
+  font-weight: bold;
+}
+
+.marker-cluster span {
+  line-height: 34px;
+}
+
+.sidebar-pane {
+  font-family: Helvetica;
+  line-height: 1.6;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+
+  h1, h2 {
+    font-weight: normal;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin: 0 0 5px 0;
+  }
+
+  h2 {
+    font-size: 20px;
+    margin: 5px 0;
+  }
+
+  p {
+    font-size: 16px;
+  }
+}
