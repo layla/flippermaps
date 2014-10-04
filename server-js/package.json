@@ -14,11 +14,15 @@
   "license": "ISC",
   "dependencies": {
     "JSONStream": "^0.9.0",
+    "bluebird": "^2.3.4",
     "client-sessions": "^0.6.0",
     "connect": "^3.1.1",
     "connect-flash": "^0.1.1",
     "connect-redirection": "0.0.1",
     "elasticsearch": "^2.4.3",
+    "event-stream": "^3.1.7",
+    "heapdump": "^0.2.10",
+    "inflection": "^1.5.0",
     "js-yaml": "^3.2.1",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
@@ -26,6 +30,7 @@
     "restify": "^2.8.2",
     "restify-cookies": "^0.1.1",
     "sequelize": "^2.0.0-rc1",
+    "through": "^2.3.6",
     "underscore": "^1.7.0"
   }
 }
