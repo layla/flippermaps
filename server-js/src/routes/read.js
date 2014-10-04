@@ -7,7 +7,7 @@ module.exports = function (req, res, next) {
     , contentTypeKey = req.params.contentTypeKey
     , contentType = app.contentTypes.get(contentTypeKey);
 
-  app.storageService.find(contentType, id).then(function (item) {
+  app.storageService.findEager(contentType, id).then(function (item) {
     res.send(item);
     return next();
   });
