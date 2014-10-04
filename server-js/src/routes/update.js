@@ -1,24 +1,14 @@
-var app = require('../../bootstrap/start')
-  , _ = require('underscore');
+'use strict';
+
+var app = require('../../bootstrap/start');
 
 module.exports = function (req, res, next) {
   var id = req.params.id
-    , contentTypeKey = req.params.contentTypeKey;
+    , contentTypeKey = req.params.contentTypeKey
+    , contentType = app.contentTypes.get(contentTypeKey);
 
-  app.db.models[contentTypeKey].find(id).success(function (item) {
-    item.updateAttributes(req.body).success(function (item) {
-      if (req.body.links) {
-        _.each(req.body.links, function (ids, typeKey) {
-          app.db.models[typeKey].findAll({
-            where: {id: ids}
-          }).success(function(relatedItems) {
-            item['set' + capitaliseFirstLetter(typeKey)](relatedItems);
-          });
-        });
-      }
-
-      res.send(item);
-      return next();
-    });
+  app.storageService.update(contentType, id, req.body).then(function (item) {
+    res.send(item);
+    return next();
   });
 };
