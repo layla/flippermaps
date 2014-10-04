@@ -22,7 +22,7 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
       })
       .scrape(function($) {
           function clean(node) {
-            return $(node).text().replace(/[\n ]+/g, '');
+            return $(node).text().replace(/^\s+|\s+$/g, '');
           }
 
           return $('body tbody tr').map(function() {
@@ -59,9 +59,9 @@ for (var i = 0; i < Math.ceil(1248 / 10); i++) {
             ',' +
             item.city;
 
-          console.log(guessString);
+          // console.log(guessString);
           geocoder.geocode(guessString, function(err, res) {
-              console.log(res, err);
+              // console.log(res, err);
               if ( ! err) {
                 var pl = res[0];
 
