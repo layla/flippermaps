@@ -91,31 +91,6 @@ _.extend(DB.prototype, {
     return {
       hasRole: function(role) {
         return _.contains(this.roles, 'ROLE_' + role);
-      },
-
-      toJSON: function() {
-        var links
-          , result = _.clone(this.get());
-
-        result.links = [];
-
-        if (this.options.includeNames) {
-          _.each(this.options.includeNames, function(key) {
-            var relatedItems = result[key];
-            if (_.isArray(relatedItems)) {
-              links = _.pluck(relatedItems, 'id');
-            } else if (relatedItems) {
-              links = relatedItems.id;
-            } else {
-              links = [];
-            }
-
-            result.links = result.links.concat(links);
-            delete result[key];
-          });
-        }
-
-        return result;
       }
     };
   },
@@ -181,7 +156,7 @@ _.extend(DB.prototype, {
   sync: function() {
     this.connection
       .sync({
-        force: true
+        // force: true
       })
       .complete(function(err) {
          if (!!err) {
